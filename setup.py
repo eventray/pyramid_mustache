@@ -28,7 +28,7 @@ requires = [
 
 setup(
     name='pyramid_mustache'
-    , version='0.0'
+    , version='0.1'
     , description='pyramid_mustache'
     , long_description=README + '\n\n' +  CHANGES
     , classifiers=[
@@ -37,9 +37,9 @@ setup(
         "Topic :: Internet :: WWW/HTTP",
         "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
     ] 
-    , author=''
-    , author_email=''
-    , url=''
+    , author='John Anderson'
+    , author_email='sontek@gmail.com'
+    , url='http://github.com/eventray/pyramid_mustache'
     , keywords='web pyramid pylons'
     , packages=find_packages()
     , include_package_data=True
