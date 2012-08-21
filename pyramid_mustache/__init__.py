@@ -81,11 +81,16 @@ class MustacheRendererFactory(object):
         template_stream = template_fh.read()
         template_fh.close()
 
+        partials = {}
+
+        if hasattr(self.request, 'mustache_partials'):
+            partials = self.request.mustache_partials
+
 #TODO: Get the patch merged and deployed to pypi so we can do this
 #        renderer = Renderer(context_class=MustacheContextStack)
-        renderer = Renderer()
+        renderer = Renderer(partials=partials)
 
-        return renderer.render(template_stream, self.value)
+        return renderer.render(template_stream, self.value, partials)
 
     def __call__(self, value, system):
         self.request = system['req']
