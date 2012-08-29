@@ -28,7 +28,7 @@ requires = [
 
 setup(
     name='pyramid_mustache'
-    , version='0.2'
+    , version='0.3'
     , description='pyramid_mustache'
     , long_description=README + '\n\n' +  CHANGES
     , classifiers=[
