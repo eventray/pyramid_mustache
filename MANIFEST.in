@@ -1,2 +1,2 @@
-include *.txt *.ini *.cfg *.rst *.in
+include *.txt *.ini *.cfg *.rst *.in *.md
 
