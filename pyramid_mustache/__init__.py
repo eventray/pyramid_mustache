@@ -5,6 +5,7 @@ from pyramid.i18n       import get_localizer
 from pyramid.i18n       import TranslationStringFactory
 
 import re
+import os.path
 
 def includeme(config):
     config.add_renderer('.mustache', MustacheRendererFactory)
@@ -83,14 +84,9 @@ class MustacheRendererFactory(object):
         template_fh = open(full_path)
         template_stream = template_fh.read()
         template_fh.close()
-
-        partials = {}
-
-        if hasattr(self.request, 'mustache_partials'):
-            partials = self.request.mustache_partials
-
-#TODO: Get the patch merged and deployed to pypi so we can do this
-#        renderer = Renderer(context_class=MustacheContextStack)
+        
+        partials = PartialsLoader(full_path)
+        
         renderer = Renderer(partials=partials)
 
         return renderer.render(template_stream, self.value, partials)
@@ -104,6 +100,21 @@ class MustacheRendererFactory(object):
         value['route_path'] = self.route_path
 
         return self.render_template(self.info.name)
+
+class PartialsLoader(object):
+    def __init__(self, full_path):
+        self.partials_root = os.path.dirname(full_path)
+        self.partials = {}
+    
+    def get(self, key):
+        if key not in self.partials:
+            partial_path = os.path.join(self.partials_root, key + '.mustache')
+            if not os.path.isfile(partial_path):
+                self.partials[key] = None
+            else:
+                with open(partial_path, 'r') as f:
+                    self.partials[key] = f.read()
+        return self.partials[key]
 
 
 def extract_mustache(fileobj, keywords, comment_tags, options):
