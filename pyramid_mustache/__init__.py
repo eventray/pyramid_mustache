@@ -7,7 +7,7 @@ from pyramid.i18n       import TranslationStringFactory
 import re
 
 def includeme(config):
-    config.add_renderer('mustache', MustacheRendererFactory)
+    config.add_renderer('.mustache', MustacheRendererFactory)
 
 _ = TranslationStringFactory('pyramid_mustache')
 
