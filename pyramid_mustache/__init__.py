@@ -87,7 +87,7 @@ class MustacheRendererFactory(object):
         
         partials = PartialsLoader(full_path)
         
-        renderer = Renderer(partials=partials)
+        renderer = Renderer(partials=partials, string_encoding='utf8')
 
         return renderer.render(template_stream, self.value, partials)
 
