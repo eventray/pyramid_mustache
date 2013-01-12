@@ -116,7 +116,7 @@ def extract_mustache(fileobj, keywords, comment_tags, options):
              tuples
     :rtype: ``iterator``
     """
-    tag_re = "\{\{\#_\}\}(.+)\{\{\/_\}\}"
+    tag_re = "\{\{\#_\}\}(.+?)\{\{\/_\}\}"
     p = re.compile(tag_re, flags=re.DOTALL | re.MULTILINE)
 
     content = fileobj.read()
@@ -129,4 +129,15 @@ def extract_mustache(fileobj, keywords, comment_tags, options):
             final_matches.append((line_no, match))
 
     for line, text in final_matches:
-        yield (line, '_', text, '')
+        yield (line, '_', text.decode("utf-8"), '')
+
+if __name__ == "__main__":
+    import sys
+
+    files = sys.argv[1:]
+
+    for f in files:
+        print"OPENING %s" % f
+        for found in extract_mustache(open(f), None, None, None):
+            print found
+
