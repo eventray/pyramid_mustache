@@ -57,15 +57,15 @@ class MustacheRendererFactory(object):
     def lorem_ipsum(self, number):
         lorem = """Lorem ipsum dolor sit amet, consectetur adipiscing elit.
         Fusce nulla felis, semper id aliquam vel, condimentum sed libero.
-        Sed volutpat iaculis pellentesque. Cras dui lectus, pretium vel 
-        fermentum pretium, faucibus non tellus. Morbi semper auctor diam id 
-        molestie. Maecenas aliquam aliquam ultricies. Nam ut turpis mi, 
-        scelerisque aliquet odio. Proin in nulla a diam pretium ornare. Donec 
-        ipsum justo, egestas ac semper non, blandit ac mauris. Nulla ultrices, 
-        neque non egestas adipiscing, massa velit volutpat tellus, sit amet 
-        fermentum tellus risus id quam. Vivamus hendrerit fringilla egestas. 
-        Nunc sit amet arcu id erat interdum dictum vitae quis risus. Sed 
-        porttitor dui vel elit pharetra ut hendrerit lorem ornare. Mauris id 
+        Sed volutpat iaculis pellentesque. Cras dui lectus, pretium vel
+        fermentum pretium, faucibus non tellus. Morbi semper auctor diam id
+        molestie. Maecenas aliquam aliquam ultricies. Nam ut turpis mi,
+        scelerisque aliquet odio. Proin in nulla a diam pretium ornare. Donec
+        ipsum justo, egestas ac semper non, blandit ac mauris. Nulla ultrices,
+        neque non egestas adipiscing, massa velit volutpat tellus, sit amet
+        fermentum tellus risus id quam. Vivamus hendrerit fringilla egestas.
+        Nunc sit amet arcu id erat interdum dictum vitae quis risus. Sed
+        porttitor dui vel elit pharetra ut hendrerit lorem ornare. Mauris id
         augue augue, sit amet facilisis justo.
         """
 
@@ -79,6 +79,10 @@ class MustacheRendererFactory(object):
         full_path = AssetResolver(None).resolve(name).abspath()
         template_fh = open(full_path)
         template_stream = template_fh.read()
+
+        # so files with non-ascii characters will get decoded properly
+        template_stream = template_stream.decode('utf-8')
+
         template_fh.close()
 
         partials = {}
