@@ -80,12 +80,17 @@ class MustacheRendererFactory(object):
         return "<br />".join(data)
 
     def render_template(self, name):
-        full_path = AssetResolver(None).resolve(name).abspath()
+        ar = AssetResolver(self.info.package)
+        full_path = ar.resolve(name).abspath()
         template_fh = open(full_path)
         template_stream = template_fh.read()
         template_fh.close()
         
-        partials = PartialsLoader(full_path)
+        partials = PartialsLoader(self.info.settings.get('mustache.directories',
+                                                         [os.path.dirname(full_path)]
+                                                         ),
+                                  ar,
+                                  )
         
         renderer = Renderer(partials=partials, string_encoding='utf8')
 
@@ -102,18 +107,29 @@ class MustacheRendererFactory(object):
         return self.render_template(self.info.name)
 
 class PartialsLoader(object):
-    def __init__(self, full_path):
-        self.partials_root = os.path.dirname(full_path)
+    def __init__(self, partials_roots, asset_resolver):
+        self.partials_roots = partials_roots
         self.partials = {}
+        self.asset_resolver = asset_resolver
     
     def get(self, key):
         if key not in self.partials:
-            partial_path = os.path.join(self.partials_root, key + '.mustache')
-            if not os.path.isfile(partial_path):
-                self.partials[key] = None
+            partial_filename = key + '.mustache'
+            for partials_root in self.partials_roots:
+                partials_root = self.asset_resolver.resolve(partials_root).abspath()
+                for dirpath, dirnames, filenames in os.walk(partials_root):
+                    for filename in filenames:
+                        if filename == partial_filename:
+                            filename = os.path.join(partials_root,
+                                                    dirpath,
+                                                    filename,
+                                                    )
+                            if os.path.isfile(filename):
+                                with open(filename, 'r') as f:
+                                    self.partials[key] = f.read()
+                                break
             else:
-                with open(partial_path, 'r') as f:
-                    self.partials[key] = f.read()
+                self.partials[key] = None
         return self.partials[key]
 
 
