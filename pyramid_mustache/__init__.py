@@ -114,22 +114,20 @@ class PartialsLoader(object):
     
     def get(self, key):
         if key not in self.partials:
+            self.partials[key] = None
             partial_filename = key + '.mustache'
             for partials_root in self.partials_roots:
                 partials_root = self.asset_resolver.resolve(partials_root).abspath()
                 for dirpath, dirnames, filenames in os.walk(partials_root):
                     for filename in filenames:
                         if filename == partial_filename:
-                            filename = os.path.join(partials_root,
-                                                    dirpath,
+                            filename = os.path.join(dirpath,
                                                     filename,
                                                     )
                             if os.path.isfile(filename):
                                 with open(filename, 'r') as f:
                                     self.partials[key] = f.read()
-                                break
-            else:
-                self.partials[key] = None
+                                    return self.partials[key]
         return self.partials[key]
 
 
