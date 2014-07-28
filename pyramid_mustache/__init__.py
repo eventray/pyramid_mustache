@@ -7,6 +7,14 @@ from pyramid.i18n       import TranslationStringFactory
 import re
 import os.path
 
+from pyramid.compat import (
+    is_nonstr_iter,
+)
+from pyramid.settings import (
+    aslist,
+)
+
+
 def includeme(config):
     config.add_renderer('.mustache', MustacheRendererFactory)
 
@@ -26,6 +34,12 @@ class MustacheContextStack(ContextStack):
 class MustacheRendererFactory(object):
     def __init__(self, info):
         self.info = info
+        self.mustache_directories = self.info.settings.get('mustache.directories')
+        if not is_nonstr_iter(self.mustache_directories):
+            self.mustache_directories = aslist(
+                self.mustache_directories,
+                flatten=True,
+            )
 
     def route_path(self, data):
         split_data = data.split(' ')
@@ -85,12 +99,9 @@ class MustacheRendererFactory(object):
         template_fh = open(full_path)
         template_stream = template_fh.read()
         template_fh.close()
-        
-        partials = PartialsLoader(self.info.settings.get('mustache.directories',
-                                                         [os.path.dirname(full_path)]
-                                                         ),
-                                  ar,
-                                  )
+
+        mustache_directories = self.mustache_directories or [os.path.dirname(full_path)]
+        partials = PartialsLoader(mustache_directories, ar)
         
         renderer = Renderer(partials=partials, string_encoding='utf8')
 
