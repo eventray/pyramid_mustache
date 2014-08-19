@@ -37,7 +37,7 @@ class MustacheRendererFactory(object):
         self.mustache_directories = self.info.settings.get('mustache.directories')
         if not is_nonstr_iter(self.mustache_directories):
             self.mustache_directories = aslist(
-                self.mustache_directories,
+                self.mustache_directories or '',
                 flatten=True,
             )
 
