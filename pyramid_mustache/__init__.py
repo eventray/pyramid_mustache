@@ -15,6 +15,13 @@ from pyramid.settings import (
 )
 
 
+class LexRenderer(Renderer):
+    """Deal with ES results of the form '["5925074"]' which from python ends up
+       as %5Bu'5925074'%5D  """
+    def str_coerce(self, val):
+        if isinstance(val, list):
+            return '_'.join(val)
+
 def includeme(config):
     config.add_renderer('.mustache', MustacheRendererFactory)
 
@@ -75,15 +82,15 @@ class MustacheRendererFactory(object):
     def lorem_ipsum(self, number):
         lorem = """Lorem ipsum dolor sit amet, consectetur adipiscing elit.
         Fusce nulla felis, semper id aliquam vel, condimentum sed libero.
-        Sed volutpat iaculis pellentesque. Cras dui lectus, pretium vel 
-        fermentum pretium, faucibus non tellus. Morbi semper auctor diam id 
-        molestie. Maecenas aliquam aliquam ultricies. Nam ut turpis mi, 
-        scelerisque aliquet odio. Proin in nulla a diam pretium ornare. Donec 
-        ipsum justo, egestas ac semper non, blandit ac mauris. Nulla ultrices, 
-        neque non egestas adipiscing, massa velit volutpat tellus, sit amet 
-        fermentum tellus risus id quam. Vivamus hendrerit fringilla egestas. 
-        Nunc sit amet arcu id erat interdum dictum vitae quis risus. Sed 
-        porttitor dui vel elit pharetra ut hendrerit lorem ornare. Mauris id 
+        Sed volutpat iaculis pellentesque. Cras dui lectus, pretium vel
+        fermentum pretium, faucibus non tellus. Morbi semper auctor diam id
+        molestie. Maecenas aliquam aliquam ultricies. Nam ut turpis mi,
+        scelerisque aliquet odio. Proin in nulla a diam pretium ornare. Donec
+        ipsum justo, egestas ac semper non, blandit ac mauris. Nulla ultrices,
+        neque non egestas adipiscing, massa velit volutpat tellus, sit amet
+        fermentum tellus risus id quam. Vivamus hendrerit fringilla egestas.
+        Nunc sit amet arcu id erat interdum dictum vitae quis risus. Sed
+        porttitor dui vel elit pharetra ut hendrerit lorem ornare. Mauris id
         augue augue, sit amet facilisis justo.
         """
 
@@ -102,8 +109,8 @@ class MustacheRendererFactory(object):
 
         mustache_directories = self.mustache_directories or [os.path.dirname(full_path)]
         partials = PartialsLoader(mustache_directories, ar)
-        
-        renderer = Renderer(partials=partials, string_encoding='utf8')
+
+        renderer = LexRenderer(partials=partials, string_encoding='utf8')
 
         return renderer.render(template_stream, self.value, partials)
 
@@ -122,7 +129,7 @@ class PartialsLoader(object):
         self.partials_roots = partials_roots
         self.partials = {}
         self.asset_resolver = asset_resolver
-    
+
     def get(self, key):
         if key not in self.partials:
             self.partials[key] = None
